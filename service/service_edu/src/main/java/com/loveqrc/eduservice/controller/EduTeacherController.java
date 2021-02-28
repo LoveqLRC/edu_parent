@@ -68,11 +68,13 @@ public class EduTeacherController {
     }
 
 
+    @ApiOperation(value = "多条件组合查询")
+    @PostMapping("pageTeacherCondition/{current}/{limit}")
     public R pageTeacherCondition(
-            @PathVariable Long page, @PathVariable Long limit,
-            TeacherQuery teacherQuery
+            @PathVariable Long current, @PathVariable Long limit,
+            @RequestBody TeacherQuery teacherQuery
     ) {
-        Page<EduTeacher> pageParam = new Page<>(page, limit);
+        Page<EduTeacher> pageParam = new Page<>(current, limit);
 
         QueryWrapper<EduTeacher> wrapper = new QueryWrapper<>();
 
@@ -104,6 +106,43 @@ public class EduTeacherController {
 
         return R.ok().data("total", total).data("rows", eduTeacherList);
     }
+
+    //添加讲师
+    @ApiOperation("添加讲师")
+    @PostMapping("addTeacher")
+    public R addTeacher(@RequestBody EduTeacher eduTeacher) {
+        boolean save = service.save(eduTeacher);
+        return save ? R.ok() : R.error();
+    }
+
+    //根据id查询
+    @ApiOperation("根据id查询讲师")
+    @GetMapping("{id}")
+    public R getById(
+            @ApiParam(name = "id", value = "讲师id", required = true)
+            @PathVariable String id
+    ) {
+        EduTeacher teacher = service.getById(id);
+        return R.ok().data("item", teacher);
+    }
+
+
+    //根据id修改
+    @ApiOperation("根据ID修改讲师")
+    @PutMapping("{id}")
+    public R updateById(
+            @ApiParam(name = "id", value = "讲师Id",required = true)
+            @PathVariable String id,
+            @ApiParam(name = "teacher", value = "讲师对象", required = true)
+            @RequestBody EduTeacher teacher
+    ) {
+
+        teacher.setId(id);
+        service.updateById(teacher);
+
+        return R.ok();
+    }
+
 
 
 }
